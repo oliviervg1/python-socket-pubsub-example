@@ -1,0 +1,142 @@
+JSON:::{ "timing" : { 
+"session": { 
+"info": { 
+"activeClassification": "FINISH_LINE", 
+"champDbId": 38, 
+"champName": "IMSA WeatherTech SportsCar Championship", 
+"champShortName": "WeatherTech Championship", 
+"champ_Series Order": "01", 
+"closed": true, 
+"date": 1470418800000, 
+"eventDbId": 37, 
+"eventName": "Continental Tire Road Race Showcase", 
+"eventShortName": "Continental Tire Road Race Showcase", 
+"event_IMSA_RaceEventSeriesId": "73", 
+"groupGap": 1500, 
+"insideCombined": true, 
+"name": "Practice 1", 
+"officialVehicles": { 
+"1543389": { 
+"name": "SC2", 
+"transponder": "1543389" 
+}, 
+"198061": { 
+"name": "SC1", 
+"transponder": "198061" 
+}, 
+"2978061": { 
+"name": "E2", 
+"transponder": "2978061" 
+}, 
+"9648734": { 
+"name": "E1", 
+"transponder": "9648734" 
+} 
+}, 
+"sessionDbId": 195, 
+"session_IMSA_SessionId": "165", 
+"stintCalcType": "IMSA", 
+"superPole": false, 
+"type": "FREE_PRACTICE", 
+"unitOfMeasure": "US", 
+"utcOffset": -5 
+} 
+} 
+} 
+}
+JSON:4::{ "timing" : { 
+"session": { 
+"track": { 
+"info": { 
+"country": "United States", 
+"length": 4.0476131984845631, 
+"name": "Road America", 
+"numberOfSectors": 3, 
+"shortName": "Road America" 
+} 
+} 
+} 
+} 
+} 
+JSON:3::{ "timing" : { 
+"session": { 
+"standings": { 
+"overall": { 
+"participantDetails": { 
+"0": { 
+"2ndBestLap": { 
+"number": 24, 
+"time": 118123 
+}, 
+"bestLap": { 
+"driver": 1, 
+"number": 58, 
+"time": 118064 
+}, 
+"bestSectors": { 
+"1": { 
+"number": 1, 
+"time": 34211 
+}, 
+"2": { 
+"number": 2, 
+"time": 47996 
+}, 
+"3": { 
+"number": 3, 
+"time": 35502 
+} 
+}, 
+"bestTopSpeed": 280.92229299363055, 
+"hasSeenCheckered": true, 
+"lastLap": { 
+"bestType": "NONE", 
+"dayTime": 1470610089354, 
+"isValid": true, 
+"sectors": { 
+"1": { 
+"number": 1, 
+"time": 37800 
+}, 
+"2": { 
+"number": 2, 
+"time": 54390 
+}, 
+"3": { 
+"number": 3, 
+"time": 38354 
+} 
+}, 
+"time": 130544 
+}, 
+"lastPassingTime": 1470610089354, 
+"lastSectors": { 
+"1": { 
+"isValid": true, 
+"number": 1, 
+"time": 37800 
+}, 
+"2": { 
+"isValid": true, 
+"number": 2, 
+"time": 54390 
+}, 
+"3": { 
+"isValid": true, 
+"number": 3, 
+"time": 38354 
+} 
+}, 
+"lastTopSpeed": 237.54829443447036, 
+"participant": "0", 
+"pitStops": 4, 
+"startedFromPit": false, 
+"status": "TRACK", 
+"transponderActive": "8908915" 
+} 
+} 
+} 
+} 
+} 
+} 
+} 
