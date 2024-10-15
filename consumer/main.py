@@ -28,12 +28,14 @@ class SocketClient(object):
         self.connected = False
         self.lock = threading.Lock()
         self.ping_timer = None
+        self.ping_rate = 20
         self.buffer = ""
 
     def connect(self):
         if not self.connected:
             try:
                 self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.client.settimeout(10)
                 self.client.connect((self.host, self.port))
                 self.set_keepalive()
                 self.connected = True
@@ -54,7 +56,6 @@ class SocketClient(object):
                     b'LOGIN:::{"user":"myname","password":"mypassword","app":"Manual Test", "app_ver":"1.0.0", "protocol":" AKS V2 Protocol", "protocol_ver":"1.0.0"}'
                 )
 
-
     def set_keepalive(self, after_idle_sec=1, interval_sec=3, max_fails=5):
         """Set TCP keepalive on an open socket.
 
@@ -74,15 +75,19 @@ class SocketClient(object):
         self.connected = False
         time.sleep(1)
 
-    def configure_ping(self, ping_rate=20):
+    def configure_ping(self):
 
         def ping():
             if self.connected:
                 with self.lock:
-                    self.client.send(b"PING:n::")
+                    try:
+                        self.client.send(b"PING:n::")
+                    except BrokenPipeError:
+                        print("===> Ping broken pipe")
+                        self.disconnect()
                 self.configure_ping()
 
-        self.ping_timer = threading.Timer(ping_rate, ping)
+        self.ping_timer = threading.Timer(self.ping_rate, ping)
         self.ping_timer.start()
 
     def receive(self):
@@ -91,7 +96,6 @@ class SocketClient(object):
         try:
             with self.lock:
                 msg = self.client.recv(2048)
-            print(msg)
         except TimeoutError:
             print("===> Connection timeout")
             self.disconnect()
@@ -100,6 +104,11 @@ class SocketClient(object):
             print("===> Connection reset")
             self.disconnect()
             raise ReceiveError
+        except OSError as e:
+            if e.errno == 9:
+                print("===> Bad file descriptor")
+                self.disconnect()
+                raise ReceiveError
 
         if msg == b"":
             print("===> Connection broken")
@@ -120,6 +129,15 @@ class SocketClient(object):
             first_match = match_pair[0][0]
             second_match = match_pair[0][1]
 
+            # Identify, process and remove LOGIN payloads that may have been consumed
+            if first_match.group(0) == "LOGIN:" or second_match.group(0) == "LOGIN:":
+                match = re.search(r"LOGIN:.*\+::({.*})", self.buffer)
+                if match:
+                    json_msg = json.loads(match.group(1))
+                    self.ping_rate = int(json_msg["pingRate"])
+                    print(f"===> LOGIN reply received. Ping rate is {self.ping_rate}.")
+                self.buffer = re.sub(r"LOGIN:.*\+::({.*})", "", self.buffer)
+
             # Identify and remove ACK payloads that may have been consumed
             if first_match.group(0) == "ACK:" or second_match.group(0) == "ACK:":
                 self.buffer = re.sub(r"ACK:.*\+::", "", self.buffer)
@@ -135,7 +153,7 @@ class SocketClient(object):
                 try:
                     json_data = json.loads(json_str)
                     data.append({"data": json.dumps(json_data)})
-                except json.decoder.JSONDecoderError:
+                except json.decoder.JSONDecodeError:
                     print("===> JSON parsing error")
                     print(self.buffer)
 
@@ -164,6 +182,7 @@ def run():
             continue
         if data:
             for d in data:
+                # print(d)
                 future = pubsub_publisher.publish(
                     pubsub_topic_name, json.dumps(d).encode("utf-8")
                 )

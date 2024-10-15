@@ -1,7 +1,16 @@
 import socket
+import json
 
 SERVER_HOST = "127.0.0.1"
 SERVER_PORT = 40000
+
+LOGIN_REPLY = {
+    "name":"serverName",
+    "ver":"1.2.0",
+    "min_ver":"1.0.0",
+    "pingRate":"10",
+    "timeout":"40"
+}
 
 
 class SocketServer(object):
@@ -28,9 +37,12 @@ class SocketServer(object):
                     for line in data.splitlines():
                         try:
                             self.connection.sendall(line.encode("utf-8"))
-                            msg = self.connection.recv(1024)
-                            print(f"===> Received: {msg.decode("utf-8")}")
-                            if "PING" in msg.decode("utf-8"):
+                            msg = self.connection.recv(1024).decode("utf-8")
+                            print(f"===> Received: {msg}")
+                            if "LOGIN" in msg:
+                                print("===> Send LOGIN reply")
+                                self.connection.sendall(f"LOGIN:n+::{json.dumps(LOGIN_REPLY)}".encode("utf-8"))
+                            if "PING" in msg:
                                 print("===> Send ACK")
                                 self.connection.sendall(b"ACK:n+::")
                         except TimeoutError:
